@@ -2,49 +2,61 @@ import React from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 `;
 
 const Label = styled.label`
+  font-family: "Syne", sans-serif;
   font-size: 12px;
-  color: ${({ theme }) => theme.text_secondary};
-  padding: 0px 4px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
+  color: ${({ theme }) => theme.text_secondary};
+  padding: 0 2px;
 `;
 
 const OutlinedInput = styled.div`
-  border-radius: 8px;
-  border: 0.5px solid ${({ theme }) => theme.text_secondary};
-  background-color: transparent;
-  color: ${({ theme }) => theme.text_secondary};
-
-  outline: none;
-  padding: 14px;
-
+  border-radius: 10px;
+  border: 1.5px solid ${({ theme }) => theme.border};
+  background-color: ${({ theme }) => theme.bgDark};
+  padding: 14px 16px;
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 10px;
+  transition: all 0.25s ease;
 
   &:focus-within {
     border-color: ${({ theme }) => theme.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.primary}20;
   }
 `;
 
-// Actual Input
 const Input = styled.input`
   width: 100%;
-  font-size: 14px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
   outline: none;
   border: none;
   background-color: transparent;
-  color: ${({ theme }) => theme.text_secondary};
+  color: ${({ theme }) => theme.text_primary};
+  resize: vertical;
 
-  &:focus {
-    outline: none;
+  &::placeholder {
+    color: ${({ theme }) => theme.text_secondary};
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const Textarea = styled(Input).attrs({ as: 'textarea' })`
+  resize: vertical;
+  font-family: "DM Sans", sans-serif;
 `;
 
 const TextInput = ({
@@ -56,20 +68,24 @@ const TextInput = ({
   textArea,
   rows,
   columns,
+  disabled,
 }) => {
+  const InputComponent = textArea ? Textarea : Input;
+  
   return (
     <Container>
-      <Label>{label}</Label>
-
+      {label && <Label htmlFor={name}>{label}</Label>}
       <OutlinedInput>
-        <Input
-          as={textArea ? "textarea" : "input"}
+        <InputComponent
+          id={name}
           name={name}
           rows={rows}
           cols={columns}
           placeholder={placeholder}
           value={value}
           onChange={(e) => handleChange(e)}
+          disabled={disabled}
+          aria-label={label}
         />
       </OutlinedInput>
     </Container>

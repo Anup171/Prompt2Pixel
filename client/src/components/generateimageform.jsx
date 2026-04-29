@@ -6,69 +6,126 @@ import { AutoAwesome, CreateRounded } from '@mui/icons-material';
 
 const Form = styled.div`
   flex: 1;
-  height: 100%;
-  max-width: 600px;
+  max-width: 560px;
   width: 100%;
-  padding: 28px;
+  padding: 36px;
   display: flex;
   flex-direction: column;
   gap: 28px;
   background: ${({ theme }) => theme.card};
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+  border: 1.5px solid ${({ theme }) => theme.border};
+  border-radius: 18px;
+
+  @media (max-width: 600px) {
+    padding: 24px 18px;
+  }
 `;
 
-const Title = styled.div`
-  font-size: 26px;
-  font-weight: 600;
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+const Title = styled.h2`
+  font-family: "Syne", sans-serif;
+  font-size: 28px;
+  font-weight: 800;
   color: ${({ theme }) => theme.text_primary};
+  margin: 0;
+  letter-spacing: -0.3px;
 `;
 
-const Desc = styled.div`
-  font-size: 15px;
+const Desc = styled.p`
+  font-size: 14px;
   color: ${({ theme }) => theme.text_secondary};
-  line-height: 1.5;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 400;
 `;
 
 const Body = styled.div`
-  flex: 1;   /* IMPORTANT */
   display: flex;
   flex-direction: column;
   gap: 20px;
 `;
 
-const Top = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+const Divider = styled.div`
+  height: 1px;
+  background: ${({ theme }) => theme.border};
 `;
 
 const Actions = styled.div`
   display: flex;
   gap: 12px;
-  justify-content: flex-end;
 
-  @media (max-width: 600px) {
+  @media (max-width: 500px) {
     flex-direction: column;
   }
 `;
 
-const GenerateImageForm = () => {
+const GenerateImageForm = ({
+  post,
+  setPost,
+  createPostLoading,
+  setGenerateImageLoading,
+  generateImageLoading,
+  setCreatePostLoading,
+}) => {
+  const generateImageFun = () => {
+    setGenerateImageLoading(true);
+  };
+
+  const createPostFun = () => {
+    setCreatePostLoading(true);
+  };
+
+  const isGenerateDisabled = post.prompt.trim() === "";
+  const isPostDisabled = post.name.trim() === "" || post.prompt.trim() === "" || post.photo === "";
+
   return (
     <Form>
-      <Top>
-        <Title>Generate Image with prompt</Title>
-        <Desc>
-          Write your prompt according to the image you want.
-        </Desc>
-      </Top>
+      <Header>
+        <Title>Generate an Image</Title>
+        <Desc>Describe the image you want to create. Be as detailed as possible for best results.</Desc>
+      </Header>
+      <Divider />
       <Body>
-        <TextInput label ='Author' placeholder="Enter your name..." name="name"/>
-        <TextInput label="Image prompt" placeholder="Write a detailed prompt about the image you want to generate..." name="prompt" rows={11} textArea/>
+        <TextInput
+          label="Your Name"
+          placeholder="Enter your name…"
+          name="name"
+          value={post.name}
+          handleChange={(e) => setPost({ ...post, name: e.target.value })}
+        />
+        <TextInput
+          label="Prompt"
+          placeholder="A cinematic photograph of a neon-lit Tokyo alley at night, rain reflections, 35mm film…"
+          name="prompt"
+          rows={8}
+          textArea
+          value={post.prompt}
+          handleChange={(e) => setPost({ ...post, prompt: e.target.value })}
+        />
       </Body>
       <Actions>
-        <Button text='Generate Image' flex leftIcon={<AutoAwesome/>}/>
-        <Button text='Post Image' flex leftIcon={<CreateRounded/>}/>
+        <Button
+          text="Generate"
+          flex
+          leftIcon={<AutoAwesome style={{ fontSize: "15px" }} />}
+          isLoading={generateImageLoading}
+          isDisabled={isGenerateDisabled}
+          onClick={generateImageFun}
+        />
+        <Button
+          text="Post"
+          flex
+          type="secondary"
+          leftIcon={<CreateRounded style={{ fontSize: "15px" }} />}
+          isLoading={createPostLoading}
+          isDisabled={isPostDisabled}
+          onClick={createPostFun}
+        />
       </Actions>
     </Form>
   );
