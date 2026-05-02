@@ -4,32 +4,32 @@ import styled from "styled-components";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 `;
 
 const Label = styled.label`
-  font-family: "Syne", sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: ${({ theme }) => theme.text_secondary};
-  padding: 0 2px;
+  padding: 0 1px;
 `;
 
 const OutlinedInput = styled.div`
-  border-radius: 10px;
-  border: 1.5px solid ${({ theme }) => theme.border};
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.border};
   background-color: ${({ theme }) => theme.bgDark};
   padding: 14px 16px;
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 
   &:focus-within {
-    border-color: ${({ theme }) => theme.primary};
-    box-shadow: 0 0 0 3px ${({ theme }) => theme.primary}20;
+    border-color: ${({ theme }) => theme.primary}70;
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.primary}12;
   }
 `;
 
@@ -42,10 +42,10 @@ const Input = styled.input`
   border: none;
   background-color: transparent;
   color: ${({ theme }) => theme.text_primary};
-  resize: vertical;
 
   &::placeholder {
     color: ${({ theme }) => theme.text_secondary};
+    opacity: 0.7;
   }
 
   &:disabled {
@@ -54,9 +54,9 @@ const Input = styled.input`
   }
 `;
 
-const Textarea = styled(Input).attrs({ as: 'textarea' })`
+const Textarea = styled(Input).attrs({ as: "textarea" })`
   resize: vertical;
-  font-family: "DM Sans", sans-serif;
+  min-height: 130px;
 `;
 
 const TextInput = ({
@@ -71,7 +71,7 @@ const TextInput = ({
   disabled,
 }) => {
   const InputComponent = textArea ? Textarea : Input;
-  
+
   return (
     <Container>
       {label && <Label htmlFor={name}>{label}</Label>}

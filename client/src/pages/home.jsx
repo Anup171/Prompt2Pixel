@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import SearchBar from '../components/searchbar';
 import ImageCard from '../components/imagecard';
@@ -7,17 +7,16 @@ import { CircularProgress } from '@mui/material';
 
 const Container = styled.div`
   min-height: calc(100vh - 68px);
-  overflow-y: auto;
   background: ${({ theme }) => theme.bg};
-  padding: 48px 40px 70px;
+  padding: 64px 44px 88px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 48px;
+  gap: 56px;
 
   @media (max-width: 768px) {
-    padding: 28px 16px 50px;
-    gap: 32px;
+    padding: 36px 18px 60px;
+    gap: 40px;
   }
 `;
 
@@ -25,52 +24,85 @@ const HeroSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   text-align: center;
-  max-width: 640px;
+  width: 100%;
+`;
+
+const Label = styled.div`
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.primary};
+  margin-bottom: 2px;
 `;
 
 const Headline = styled.h1`
   font-family: "Syne", sans-serif;
-  font-size: 42px;
+  font-size: clamp(32px, 3.2vw, 80px);
   font-weight: 800;
   color: ${({ theme }) => theme.text_primary};
-  line-height: 1.2;
+  line-height: 1.05;
   margin: 0;
-  letter-spacing: -0.5px;
+  letter-spacing: -1.5px;
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
 
-  @media (max-width: 600px) {
-    font-size: 28px;
+  @media (max-width: 700px) {
+    font-size: clamp(26px, 8vw, 44px);
+    letter-spacing: -0.5px;
+    white-space: normal;
   }
 `;
 
 const Subheadline = styled.p`
-  font-size: 16px;
+  font-size: 17px;
   color: ${({ theme }) => theme.text_secondary};
-  line-height: 1.7;
+  line-height: 1.75;
   margin: 0;
   font-weight: 400;
-`;
-
-const GradientSpan = styled.span`
-  background: ${({ theme }) => theme.gradient};
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  max-width: 460px;
 `;
 
 const GridWrapper = styled.div`
   width: 100%;
-  max-width: 1400px;
+`;
+
+const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+`;
+
+const SectionTitle = styled.div`
+  font-family: "Syne", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.text_primary};
+  letter-spacing: -0.2px;
+`;
+
+const SectionCount = styled.div`
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  color: ${({ theme }) => theme.text_secondary};
 `;
 
 const CardWrapper = styled.div`
   width: 100%;
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 
-  @media (max-width: 1100px) {
+  @media (max-width: 1300px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 1000px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
@@ -85,11 +117,17 @@ const EmptyState = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   padding: 80px 20px;
   color: ${({ theme }) => theme.text_secondary};
   font-size: 16px;
   font-weight: 500;
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
 `;
 
 const Home = () => {
@@ -99,65 +137,74 @@ const Home = () => {
   const [error, setError] = useState("");
   const [filtered, setFiltered] = useState([]);
 
-    const getPosts = async () => {
-      setLoading(true);
-      await GetPosts().then ((res)=>{
+  const getPosts = async () => {
+    setLoading(true);
+    await GetPosts()
+      .then((res) => {
         setLoading(false);
         setPosts(res?.data?.data);
         setFiltered(res?.data?.data);
-      }).catch((error) => {
-      setError(error?.response?.data?.message);
-      setLoading(false);
-    });
-    };
+      })
+      .catch((error) => {
+        setError(error?.response?.data?.message);
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     getPosts();
   }, []);
 
   useEffect(() => {
-    if(!search){
+    if (!search) {
       setFiltered(posts);
       return;
     }
-    const SearchfilteredPosts =posts.filter((post)=>{
-      const searchText = search.toLowerCase();
-      const promptMatch = post?.prompt?.toLowerCase().includes(searchText);
-      const authorMatch =post?.name?.toLowerCase().includes(searchText);
-
-      return promptMatch || authorMatch;
-    });
-    if(search){
-      setFiltered(SearchfilteredPosts);
-    }
-  },[posts,search])
+    const searchText = search.toLowerCase();
+    const result = posts.filter(
+      (post) =>
+        post?.prompt?.toLowerCase().includes(searchText) ||
+        post?.name?.toLowerCase().includes(searchText)
+    );
+    setFiltered(result);
+  }, [posts, search]);
 
   return (
     <Container>
       <HeroSection>
-        <Headline>
-          Explore <GradientSpan>AI-Generated</GradientSpan> Images
-        </Headline>
+        <Label>Community Gallery</Label>
+        <Headline>AI-Generated Images</Headline>
         <Subheadline>
-          Discover community creations or generate your own. Turn ideas into visuals.
+          Browse what others have created, or generate your own from a single sentence.
         </Subheadline>
         <SearchBar search={search} setSearch={setSearch} />
       </HeroSection>
+
       <GridWrapper>
-          {error && <div style={{color:'red'}}>{error}</div>}
-          {loading ?(
-            <CircularProgress/>
-          ):(
-          <CardWrapper>
-            {filtered.length == 0 ?<>No Posts Found</>:
-            <>
-            {filtered.slice()
-            .reverse()
-            .map((item,index)=>(
-              <ImageCard key={index} item={item}/>
-            ))}
-            </>}
-          </CardWrapper>
+        {error && <div style={{ color: "red", fontSize: "15px" }}>{error}</div>}
+        {loading ? (
+          <LoadingWrapper>
+            <CircularProgress size={24} style={{ color: "#f97316" }} />
+          </LoadingWrapper>
+        ) : (
+          <>
+            <SectionHeader>
+              <SectionTitle>Latest creations</SectionTitle>
+              {filtered.length > 0 && (
+                <SectionCount>{filtered.length} image{filtered.length !== 1 ? "s" : ""}</SectionCount>
+              )}
+            </SectionHeader>
+            <CardWrapper>
+              {filtered.length === 0 ? (
+                <EmptyState>No images found</EmptyState>
+              ) : (
+                filtered
+                  .slice()
+                  .reverse()
+                  .map((item, index) => <ImageCard key={index} item={item} />)
+              )}
+            </CardWrapper>
+          </>
         )}
       </GridWrapper>
     </Container>
