@@ -106,16 +106,16 @@ const ImageCard = ({ item }) => {
   };
 
   return (
-    <Card role="article" aria-label={`Image by ${item?.author}`}>
+    <Card role="article" aria-label={`Image by ${item?.name || item?.author}`}>
       <Image src={item?.photo} alt={item?.prompt} loading="lazy" />
       <HoverOverlay>
         <Prompt>{item?.prompt}</Prompt>
         <AuthorRow>
           <Author>
             <Avatar sx={{ width: "24px", height: "24px", fontSize: "11px", bgcolor: "primary.main" }}>
-              {item?.author?.[0]?.toUpperCase()}
+              {(item?.name || item?.author)?.[0]?.toUpperCase()}
             </Avatar>
-            {item?.author}
+            {item?.name || item?.author}
           </Author>
           <DownloadBtn
             onClick={handleDownload}

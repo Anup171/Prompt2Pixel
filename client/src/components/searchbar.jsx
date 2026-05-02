@@ -41,16 +41,15 @@ const SearchInput = styled.input`
   }
 `;
 
-const SearchBar = ({ value, onChange, disabled }) => {
+const SearchBar = ({search,setSearch}) => {
   return (
     <SearchBarContainer>
       <SearchOutlined style={{ color: "inherit", flexShrink: 0, fontSize: "18px" }} aria-hidden="true" />
       <SearchInput
         type="text"
         placeholder="Search by prompt or author…"
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
+        value={search}
+        onChange={(e)=>setSearch(e.target.value)}
         aria-label="Search images by prompt or author"
       />
     </SearchBarContainer>

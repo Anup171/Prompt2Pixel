@@ -1,8 +1,12 @@
 import React from 'react';
+import {useNavigate} from 'react-router-dom';
+import { useState } from 'react';
 import styled from 'styled-components';
 import Button from './buttons';
 import TextInput from './TextInput';
 import { AutoAwesome, CreateRounded } from '@mui/icons-material';
+import { GenerateImage } from '../api';
+import { CreatePost } from '../api';
 
 const Form = styled.div`
   flex: 1;
@@ -72,14 +76,37 @@ const GenerateImageForm = ({
   generateImageLoading,
   setCreatePostLoading,
 }) => {
-  const generateImageFun = () => {
-    setGenerateImageLoading(true);
-  };
+  const navigate = useNavigate();
+  const [error,setError]=useState("");
+  const generateImageFun = async () => {
+  setGenerateImageLoading(true);
 
-  const createPostFun = () => {
-    setCreatePostLoading(true);
-  };
+  await GenerateImage({ prompt: post.prompt })
+    .then((res) => {
+      setPost({
+        ...post,
+        photo: res?.data?.photo,
+      });
+      setGenerateImageLoading(false);
+    })
+    .catch((error) => {
+      setError(error?.response?.data?.message);
+      setGenerateImageLoading(false);
+    });
+};
+  const createPostFun = async () => {
+  setCreatePostLoading(true);
 
+  await CreatePost(post)
+    .then((res) => {
+      setCreatePostLoading(false);
+      navigate("/");
+    })
+    .catch((error) => {
+      setError(error?.response?.data?.message);
+      setCreatePostLoading(false);
+    });
+};
   const isGenerateDisabled = post.prompt.trim() === "";
   const isPostDisabled = post.name.trim() === "" || post.prompt.trim() === "" || post.photo === "";
 
@@ -107,6 +134,7 @@ const GenerateImageForm = ({
           value={post.prompt}
           handleChange={(e) => setPost({ ...post, prompt: e.target.value })}
         />
+        {error && <div style={{ color: "red" }}>{error}</div>}
       </Body>
       <Actions>
         <Button
