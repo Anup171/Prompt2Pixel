@@ -1,9 +1,9 @@
 import * as dotenv from "dotenv";
 import { createError } from "../error.js";
+import fetch from "node-fetch"; // ✅ important for Render
 
 dotenv.config();
 
-// Controller — uses Pollinations.AI (no API key needed, always free)
 export const generateImage = async (req, res, next) => {
   try {
     const { prompt } = req.body;
@@ -12,26 +12,31 @@ export const generateImage = async (req, res, next) => {
       return next(createError(400, "Prompt is required"));
     }
 
-    // Pollinations.AI: free, no auth, returns image directly
     const encodedPrompt = encodeURIComponent(prompt);
-    const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&nologo=true&model=flux`;
+
+   
+    const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&nologo=true`;
 
     const response = await fetch(url);
 
+    console.log("Status:", response.status); 
+
     if (!response.ok) {
-      throw new Error(`Image API error (${response.status}): ${response.statusText}`);
+      const text = await response.text(); 
+      console.log("API Error:", text);
+      throw new Error(`Image API error (${response.status})`);
     }
 
     const arrayBuffer = await response.arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString("base64");
-    const contentType = response.headers.get("content-type") || "image/jpeg";
-    const mimeType = contentType.startsWith("image/") ? contentType : "image/jpeg";
 
     return res.status(200).json({
-      photo: `data:${mimeType};base64,${base64}`,
+      photo: `data:image/jpeg;base64,${base64}`,
     });
 
   } catch (error) {
+    console.log("Final error:", error); 
+
     next(
       createError(
         error.status || 500,
