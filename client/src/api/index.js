@@ -1,4 +1,8 @@
-const API = axios.create({ baseURL: "https://prompt2pixel.onrender.com/api" });
+const API = axios.create({
+  baseURL: "https://prompt2pixel.onrender.com/api",
+  maxContentLength: Infinity,
+  maxBodyLength: Infinity,
+});
 
 export const GetPosts = async () => await API.get("/posts");
 export const CreatePost = async (data) => await API.post("/posts", data);
