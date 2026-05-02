@@ -36,23 +36,19 @@ app.get("/",async(req, res) => {
     });
 });
 
-// connect to database
-const connectDB = () => {
-    mongoose.set("strictQuery", true);
-    mongoose.connect(process.env.MONGO_URI)
-        .then(() => console.log("Connected to MongoDB"))
-        .catch((err) => console.error("Failed to connect to DB", err));
-};
-// fuction to start the server
-
 const startServer = async () => {
     try {
-        connectDB();
+        mongoose.set("strictQuery", true);
+
+        await mongoose.connect(process.env.MONGO_URI); 
+        console.log("Connected to MongoDB");
+
         app.listen(8080, () => {
             console.log("Server is running on port 8080");
         });
+
     } catch (error) {
-        console.log(error);
+        console.log("DB connection failed:", error);
     }
 };
 
