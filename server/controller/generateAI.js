@@ -5,8 +5,6 @@ dotenv.config();
 
 export const generateImage = async (req, res, next) => {
   try {
-    console.log("🔥 generateImage route hit");
-
     const { prompt } = req.body;
 
     if (!prompt) {
@@ -14,34 +12,12 @@ export const generateImage = async (req, res, next) => {
     }
 
     const encodedPrompt = encodeURIComponent(prompt);
-
     const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&nologo=true`;
 
-    const response = await fetch(url);
-
-    console.log("Status:", response.status);
-
-    if (!response.ok) {
-      const text = await response.text();
-      console.log("API Error:", text);
-      throw new Error(`Image API error (${response.status})`);
-    }
-
-    const arrayBuffer = await response.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString("base64");
-
-    return res.status(200).json({
-      photo: `data:image/jpeg;base64,${base64}`,
-    });
+    // Just return the URL — let the browser fetch the image directly
+    return res.status(200).json({ photo: url });
 
   } catch (error) {
-    console.log("❌ Final error:", error);
-
-    next(
-      createError(
-        error.status || 500,
-        error.message || "Image generation failed"
-      )
-    );
+    next(createError(500, error.message || "Image generation failed"));
   }
 };
