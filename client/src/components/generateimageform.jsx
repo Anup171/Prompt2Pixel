@@ -94,7 +94,11 @@ const GenerateImageForm = ({
         setGenerateImageLoading(false);
       })
       .catch((error) => {
-        setError(error?.response?.data?.message || "Failed to generate image.");
+        if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+          setError("Server is waking up (cold start). Please try again in 10 seconds.");
+        } else {
+          setError(error?.response?.data?.message || "Failed to generate image.");
+        }
         setGenerateImageLoading(false);
       });
   };
